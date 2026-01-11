@@ -1,0 +1,17 @@
+﻿From 4eb93c529db137d42568cf6667afd00c11e531fc Mon Sep 17 00:00:00 2001
+From: megelisebender-cmd megelisebender@gmail.com
+Date: Sun, 11 Jan 2026 13:18:09 -0500
+Subject: [PATCH] Support TXT roster files alongside CSV
+
+877ce70.patch | 1 +
+1 file changed, 1 insertion(+)
+create mode 100644 877ce70.patch
+
+diff --git a/877ce70.patch b/877ce70.patch
+new file mode 100644
+index 0000000..9e37de5
+--- /dev/null
++++ b/877ce70.patch
+@@ -0,0 +1 @@
++﻿PASTE THE ENTIRE PATCH CONTENT HERE (everything from "From 877ce70..." down to "2.43.0")
+2.43.0 

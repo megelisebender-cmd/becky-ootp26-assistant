@@ -5,7 +5,6 @@ import os
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -13,11 +12,11 @@ class RosterRow:
     name: str
     team: str
     league: str
-    age: Optional[int]
-    salary: Optional[int]
+    age: int | None
+    salary: int | None
 
 
-def _safe_int(v: str) -> Optional[int]:
+def _safe_int(v: str) -> int | None:
     if v is None:
         return None
     s = str(v).strip()
@@ -46,7 +45,7 @@ def _compute_age(birth_y: int, birth_m: int, birth_d: int, season_year: int) -> 
     return age
 
 
-def _find_mlb_rosters_file(export_root: Path) -> Optional[Path]:
+def _find_mlb_rosters_file(export_root: Path) -> Path | None:
     """
     We check common placements:
       - export_root/mlb_rosters.txt
@@ -155,13 +154,13 @@ def parse_mlb_rosters(export_root: Path) -> list[RosterRow]:
             by = _safe_int(raw[i_year]) or 0
             bm = _safe_int(raw[i_month]) or 0
             bd = _safe_int(raw[i_day]) or 0
-            age: Optional[int] = None
+            age: int | None = None
             if by > 0 and 1 <= bm <= 12 and 1 <= bd <= 31:
                 age = _compute_age(by, bm, bd, season_year)
 
             # Salary: pick contract year based on "contract current year"
             # 0 => y1, 1 => y2, etc. If out of range, fall back to y1.
-            salary: Optional[int] = None
+            salary: int | None = None
             cur = _safe_int(raw[i_contract_current])
             if contract_year_idxs:
                 pick = 0

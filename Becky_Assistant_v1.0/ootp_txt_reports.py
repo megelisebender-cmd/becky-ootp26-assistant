@@ -1,18 +1,17 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
+import csv
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-import csv
-import re
-from typing import Any, Dict, Iterable, List, Optional
-
+from typing import Any
 
 # -----------------------------
 # helpers
 # -----------------------------
 
-def _to_int(s: str) -> Optional[int]:
+def _to_int(s: str) -> int | None:
     s = (s or "").strip()
     if not s:
         return None
@@ -24,11 +23,11 @@ def _to_int(s: str) -> Optional[int]:
     return None
 
 
-def _read_txt_rows(path: Path) -> List[List[str]]:
+def _read_txt_rows(path: Path) -> list[list[str]]:
     """
     OOTP txt reports: lots of // comments, then comma-delimited rows.
     """
-    rows: List[List[str]] = []
+    rows: list[list[str]] = []
     with path.open("r", encoding="utf-8", errors="replace", newline="") as f:
         for raw in f:
             line = raw.strip()
@@ -76,7 +75,7 @@ def find_export_root(root: Path) -> Path:
 # specific report parsers
 # -----------------------------
 
-def load_mlb_rosters_txt(path: Path, *, league_year: Optional[int] = None) -> List[Dict[str, Any]]:
+def load_mlb_rosters_txt(path: Path, *, league_year: int | None = None) -> list[dict[str, Any]]:
     """
     mlb_rosters.txt is wide and has no explicit header line.
     We pull the fields we care about by index.
@@ -93,12 +92,11 @@ def load_mlb_rosters_txt(path: Path, *, league_year: Optional[int] = None) -> Li
     if league_year is None:
         league_year = datetime.now().year
 
-    out: List[Dict[str, Any]] = []
+    out: list[dict[str, Any]] = []
     for r in rows:
         # guard: some rows might be shorter in certain exports
-        def get(i: int) -> str:
-            return r[i].strip() if i < len(r) else ""
-
+        def get(i: int, row=r) -> str:
+            return row[i].strip() if i < len(row) else ""
         player_id = _to_int(get(0))
         team_id = _to_int(get(2))
         team_name = get(3)
@@ -129,16 +127,16 @@ def load_mlb_rosters_txt(path: Path, *, league_year: Optional[int] = None) -> Li
     return out
 
 
-def load_player_batting_stats_txt(path: Path) -> List[Dict[str, Any]]:
+def load_player_batting_stats_txt(path: Path) -> list[dict[str, Any]]:
     """
     First columns in your sample:
       0 player_id, 1 last, 2 first, 3 year, 4 team_id, ...
     """
     rows = _read_txt_rows(path)
-    out: List[Dict[str, Any]] = []
+    out: list[dict[str, Any]] = []
     for r in rows:
-        def get(i: int) -> str:
-            return r[i].strip() if i < len(r) else ""
+        def get(i: int, row=r) -> str:
+            return row[i].strip() if i < len(row) else ""
         out.append(
             {
                 "player_id": _to_int(get(0)),
@@ -152,16 +150,16 @@ def load_player_batting_stats_txt(path: Path) -> List[Dict[str, Any]]:
     return out
 
 
-def load_player_pitching_stats_txt(path: Path) -> List[Dict[str, Any]]:
+def load_player_pitching_stats_txt(path: Path) -> list[dict[str, Any]]:
     """
     First columns in your sample:
       0 player_id, 1 last, 2 first, 3 year, 4 team_id, ...
     """
     rows = _read_txt_rows(path)
-    out: List[Dict[str, Any]] = []
+    out: list[dict[str, Any]] = []
     for r in rows:
-        def get(i: int) -> str:
-            return r[i].strip() if i < len(r) else ""
+        def get(i: int, row=r) -> str:
+            return row[i].strip() if i < len(row) else ""
         out.append(
             {
                 "player_id": _to_int(get(0)),
@@ -175,16 +173,16 @@ def load_player_pitching_stats_txt(path: Path) -> List[Dict[str, Any]]:
     return out
 
 
-def load_player_fielding_stats_txt(path: Path) -> List[Dict[str, Any]]:
+def load_player_fielding_stats_txt(path: Path) -> list[dict[str, Any]]:
     """
     First columns in your sample:
       0 player_id, 1 last, 2 first, 3 year, 4 team_id, ...
     """
     rows = _read_txt_rows(path)
-    out: List[Dict[str, Any]] = []
+    out: list[dict[str, Any]] = []
     for r in rows:
-        def get(i: int) -> str:
-            return r[i].strip() if i < len(r) else ""
+        def get(i: int, row=r) -> str:
+            return row[i].strip() if i < len(row) else ""
         out.append(
             {
                 "player_id": _to_int(get(0)),
@@ -206,13 +204,13 @@ def load_player_fielding_stats_txt(path: Path) -> List[Dict[str, Any]]:
 class Table:
     name: str
     path: Path
-    rows: List[Dict[str, Any]]
+    rows: list[dict[str, Any]]
 
 
-def load_all_tables(export_root: Path, *, league_year: Optional[int] = None) -> Dict[str, Table]:
+def load_all_tables(export_root: Path, *, league_year: int | None = None) -> dict[str, Table]:
     export_root = find_export_root(export_root)
 
-    tables: Dict[str, Table] = {}
+    tables: dict[str, Table] = {}
 
     # roster (preferred)
     rosters = export_root / "mlb_rosters.txt"
@@ -242,3 +240,4 @@ def load_all_tables(export_root: Path, *, league_year: Optional[int] = None) -> 
         tables["team_roster"] = Table("team_roster", team_csv, rows)
 
     return tables
+

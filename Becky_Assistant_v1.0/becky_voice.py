@@ -10,6 +10,7 @@ app doesn't have to change.
 
 from __future__ import annotations
 
+
 def speak(text: str) -> None:
     """Output Becky text to the console."""
     print(f"Becky: {text}")

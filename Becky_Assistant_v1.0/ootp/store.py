@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from .exports import PathLike, TableInfo, discover_csv_tables, read_csv_rows
 

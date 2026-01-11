@@ -3,14 +3,14 @@ from __future__ import annotations
 import csv
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from ootp_txt_adapter import parse_mlb_rosters
 
 
 def load_team_data(
-    export_root: Optional[str | Path] = None,
-    export_path: Optional[str] = None,
+    export_root: str | Path | None = None,
+    export_path: str | None = None,
 ) -> list[dict[str, Any]]:
     """
     Loads roster data for Becky.

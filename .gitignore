@@ -24,3 +24,7 @@ Thumbs.db
 # Curated OOTP fixture staging artifacts (do not commit)
 ootp26_fixtures_curated.zip
 ootp26_fixtures_curated/
+
+# OOTP local exports (do not commit)
+tests/fixtures/ootp_exports_26/
+

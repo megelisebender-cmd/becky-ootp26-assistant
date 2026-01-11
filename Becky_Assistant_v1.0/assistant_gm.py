@@ -28,15 +28,18 @@ def run_becky() -> None:
     """Run Becky in text-only interactive mode."""
     becky_voice.speak("Hi Coach — text-only mode is online. Type 'help' for commands.")
 
-    # Back-compat: BECKY_EXPORT_PATH can point to a single roster CSV.
-    # New: BECKY_EXPORT_ROOT can point to a directory of OOTP exports.
-    export_path = os.getenv("BECKY_EXPORT_PATH", "exports/team_roster.csv")
-    export_root = os.getenv("BECKY_EXPORT_ROOT", "")
+    # Back-compat: BECKY_EXPORT_PATH can point to a single roster CSV RELATIVE TO EXPORT ROOT.
+    # New: BECKY_EXPORT_ROOT points to the directory that contains exports/ and/or mlb_rosters.txt.
+    export_root = os.getenv("BECKY_EXPORT_ROOT", "").strip()
 
-    team_data = data_adapter.load_team_data(export_path)
+    # If no export root set, fall back to current folder (keeps fixtures/dev behavior working).
+    export_root_path = Path(os.path.expandvars(export_root)).expanduser() if export_root else Path.cwd()
+
+    team_data = data_adapter.load_team_data(export_root_path)
+
     store = ExportStore()
     if export_root:
-        store.load(export_root)
+        store.load(str(export_root_path))
 
     while True:
         try:
@@ -57,17 +60,17 @@ def run_becky() -> None:
             becky_voice.speak(baseball_queries.help_text())
             continue
         if cmd == "reload":
-            team_data = data_adapter.load_team_data(export_path)
+            team_data = data_adapter.load_team_data(export_root_path)
             if export_root:
-                store.load(export_root)
+                store.load(str(export_root_path))
             becky_voice.speak("Reloaded exports.")
             continue
         if cmd == "where":
-            parts_out = [f"Roster export path: {export_path}"]
-            if export_root:
-                parts_out.append(f"Export root: {export_root}")
-                parts_out.append(f"Tables: {len(store.table_names())}")
-            becky_voice.speak("\n".join(parts_out))
+            out = [f"Export root: {export_root_path}"]
+            out.append(f"Roster source: CSV if present, otherwise TXT (mlb_rosters.txt)")
+            if store.is_loaded():
+                out.append(f"CSV tables: {len(store.table_names())}")
+            becky_voice.speak("\n".join(out))
             continue
 
         # Export root controls
@@ -76,8 +79,13 @@ def run_becky() -> None:
                 becky_voice.speak("Usage: setroot <path-to-exports-folder>")
                 continue
             export_root = os.path.expandvars(parts[1])
-            store.load(export_root)
-            becky_voice.speak(f"Loaded export root with {len(store.table_names())} CSV tables.")
+            export_root_path = Path(export_root).expanduser()
+            store.load(str(export_root_path))
+            team_data = data_adapter.load_team_data(export_root_path)
+            becky_voice.speak(
+                f"Loaded export root. CSV tables found: {len(store.table_names())}. "
+                f"Roster will load from CSV if present, otherwise from TXT reports."
+            )
             continue
 
         if cmd == "autodetect":
@@ -85,7 +93,7 @@ def run_becky() -> None:
             if not dirs:
                 becky_voice.speak(
                     "Couldn't find a default OOTP 26 saved_games folder on this machine. "
-                    "Try: setroot <your exports folder>"
+                    "Try: setroot <your .lg\\import_export folder>"
                 )
                 continue
 
@@ -95,12 +103,13 @@ def run_becky() -> None:
 
             if not roots:
                 becky_voice.speak(
-                    "Found saved_games folders, but no export folders with CSVs. "
-                    "In OOTP, enable CSV export (or export reports), then try again."
+                    "Found saved_games folders, but no export roots detected. "
+                    "Tip: use setroot to point directly at your .lg\\import_export folder."
                 )
                 continue
 
             lines = ["Possible exports folders:"]
+            lines.append("TXT report roots (mlb_rosters.txt):")
             for i, r in enumerate(roots[:25], start=1):
                 lines.append(f"  {i}. {r}")
             lines.append("Use: setroot <one of these paths>")
@@ -155,7 +164,6 @@ def run_becky() -> None:
         elif cmd in {"highest", "highest_salary"}:
             becky_voice.speak(baseball_queries.highest_salary(team_data))
         elif cmd == "top":
-            # allow: top salaries 5
             if len(parts) >= 2 and parts[1].lower() == "salaries":
                 n = 5
                 if len(parts) >= 3:

@@ -1,8 +1,7 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from .exports import PathLike, TableInfo, discover_csv_tables, read_csv_rows
 
@@ -31,13 +30,14 @@ class ExportStore:
     def load(self, root: PathLike) -> None:
         p = Path(root).expanduser()
         self.root = p
-        self._tables = {t.name: t for t in discover_csv_tables(p)}
+        self._tables = {t.name.replace("\\", "/"): t for t in discover_csv_tables(p)}
 
     def is_loaded(self) -> bool:
         return bool(self._tables)
 
     def table_names(self) -> list[str]:
-        return sorted(self._tables.keys())
+        return sorted(k.replace("\\", "/") for k in self._tables.keys())
+
 
     def get_table_info(self, name: str) -> TableInfo | None:
         return self._tables.get(name)
@@ -88,3 +88,4 @@ class ExportStore:
                 if len(out) >= limit:
                     break
         return out
+

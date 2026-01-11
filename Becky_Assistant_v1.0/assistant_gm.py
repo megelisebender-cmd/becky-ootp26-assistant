@@ -7,8 +7,8 @@ from pathlib import Path
 import baseball_queries
 import becky_voice
 import data_adapter
-from ootp.store import ExportStore
 from ootp.paths import find_export_roots, guess_saved_games_dirs
+from ootp.store import ExportStore
 
 
 def _format_rows(rows: list[dict[str, str]], max_cols: int = 8) -> str:
@@ -67,7 +67,7 @@ def run_becky() -> None:
             continue
         if cmd == "where":
             out = [f"Export root: {export_root_path}"]
-            out.append(f"Roster source: CSV if present, otherwise TXT (mlb_rosters.txt)")
+            out.append("Roster source: CSV if present, otherwise TXT (mlb_rosters.txt)")
             if store.is_loaded():
                 out.append(f"CSV tables: {len(store.table_names())}")
             becky_voice.speak("\n".join(out))

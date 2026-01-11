@@ -1,0 +1,24 @@
+name: Codex task
+description: A well-scoped task for Codex to implement
+title: "[codex] "
+labels: ["codex"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+       description: What is the exact outcome?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checklist of conditions to be considered done
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / constraints
+       description: Files to touch, constraints, etc.

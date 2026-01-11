@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest an improvement
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What should be added/changed?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why?
+      description: Value / user story

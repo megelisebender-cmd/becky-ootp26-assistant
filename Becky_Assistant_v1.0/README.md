@@ -1,3 +1,16 @@
+## Quickstart (TXT reports / import_export)
+
+Becky can load your roster from OOTP TXT reports (ex: `mlb_rosters.txt`) inside your league’s `import_export` folder.
+
+### 1) Set your export root (recommended)
+PowerShell (quotes matter if you have spaces):
+
+```powershell
+$env:BECKY_EXPORT_ROOT="C:\Users\mdb85\OneDrive\Documents\Out of the Park Developments\OOTP Baseball 26\saved_games\Megan Bender 01.lg\import_export"
+$env:BECKY_LEAGUE="Major League Baseball"    # optional filter
+$env:BECKY_SEASON_YEAR="2026"                # optional, improves age calc
+python launcher.py
+
 # Becky Assistant GM (text-only)
 
 Text-only assistant for **Out of the Park Baseball (OOTP)** exports.

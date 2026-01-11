@@ -21,3 +21,6 @@ Thumbs.db
 
 # secrets
 .env
+# Curated OOTP fixture staging artifacts (do not commit)
+ootp26_fixtures_curated.zip
+ootp26_fixtures_curated/

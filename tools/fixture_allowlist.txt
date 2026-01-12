@@ -1,0 +1,11 @@
+# Paths are relative to the repo root.
+# Keep this list tight and intentional.
+# Verifier enforces that all entries stay under tests/fixtures/ootp_exports_26/
+
+tests/fixtures/ootp_exports_26/players.csv
+tests/fixtures/ootp_exports_26/teams.csv
+tests/fixtures/ootp_exports_26/rosters.csv
+tests/fixtures/ootp_exports_26/transactions.csv
+tests/fixtures/ootp_exports_26/batting_stats.csv
+tests/fixtures/ootp_exports_26/pitching_stats.csv
+tests/fixtures/ootp_exports_26/fielding_stats.csv
